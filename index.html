@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Brojac Novca</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 0 14px 200px;
+            min-height: 100vh;
+        }
+
+        .app-header {
+            text-align: center;
+            padding: 22px 0 14px;
+            border-bottom: 1px solid #1e293b;
+            margin-bottom: 6px;
+        }
+
+        .app-header h1 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            letter-spacing: 0.5px;
+        }
+
+        .app-header p {
+            font-size: 0.72rem;
+            color: #475569;
+            margin-top: 3px;
+        }
+
+        .section-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 18px 2px 8px;
+            color: #64748b;
+        }
+
+        .section-label span { padding-bottom: 3px; border-bottom: 2px solid; }
+        .rsd-label span { border-color: #d4a017; color: #d4a017; }
+        .eur-label span { border-color: #4a90d9; color: #4a90d9; }
+
+        /* CARD */
+        .note-card {
+            display: flex;
+            align-items: center;
+            background: #1e293b;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            overflow: hidden;
+            border: 1px solid #263347;
+            transition: border-color 0.15s;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .note-card.active {
+            border-color: #d4a017;
+        }
+
+        .note-card.active-eur {
+            border-color: #4a90d9;
+        }
+
+        .note-face {
+            width: 88px;
+            height: 62px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .note-face .nv {
+            font-size: 1.3rem;
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -0.5px;
+        }
+
+        .note-face .nc {
+            font-size: 0.58rem;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-top: 3px;
+            opacity: 0.65;
+        }
+
+        .r10   { background: #1a1430; color: #a78bfa; }
+        .r20   { background: #0d2218; color: #4ade80; }
+        .r50   { background: #0d1f3c; color: #60a5fa; }
+        .r100  { background: #0c1c2e; color: #38bdf8; }
+        .r200  { background: #2a1800; color: #fb923c; }
+        .r500  { background: #2a0a0a; color: #f87171; }
+        .r1000 { background: #160d2e; color: #818cf8; }
+        .r2000 { background: #0f1f33; color: #7dd3fc; }
+        .r5000 { background: #2a0a1e; color: #f472b6; }
+        .e5    { background: #1a1e24; color: #94a3b8; }
+        .e10   { background: #2a1000; color: #fdba74; }
+        .e20   { background: #0d1f3c; color: #60a5fa; }
+        .e50   { background: #2a1400; color: #fb923c; }
+        .e100  { background: #0c2010; color: #4ade80; }
+        .e200  { background: #241a00; color: #fbbf24; }
+        .e500  { background: #1a0a2a; color: #c084fc; }
+
+        .note-body {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+        }
+
+        .note-sub .lbl {
+            font-size: 0.68rem;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .note-sub .val {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin-top: 2px;
+        }
+
+        .note-qty {
+            text-align: right;
+        }
+
+        .note-qty .lbl {
+            font-size: 0.68rem;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .note-qty .qty-val {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #94a3b8;
+            margin-top: 1px;
+            min-width: 42px;
+            text-align: right;
+        }
+
+        .note-qty .qty-val.has-value { color: #f1f5f9; }
+
+        /* DIVIDER */
+        .divider { height: 1px; background: #1e293b; margin: 18px 0; }
+
+        /* TOTALS */
+        .totals-box {
+            background: #1e293b;
+            border-radius: 12px;
+            border: 1px solid #263347;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .totals-box .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 11px 16px;
+            border-bottom: 1px solid #263347;
+            font-size: 0.88rem;
+        }
+
+        .totals-box .row:last-child { border-bottom: none; }
+        .totals-box .row .lbl { color: #64748b; }
+        .totals-box .row .val { font-weight: 700; color: #e2e8f0; }
+
+        .grand-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: #152033;
+            border-radius: 12px;
+            border: 1px solid #1d3252;
+            margin-top: 10px;
+        }
+
+        .grand-row .lbl {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #64748b;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .grand-row .val {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #d4a017;
+        }
+
+        .btn-reset {
+            width: 100%;
+            padding: 13px;
+            margin-top: 12px;
+            background: transparent;
+            color: #475569;
+            border: 1px solid #263347;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        .rate-note {
+            text-align: center;
+            font-size: 0.68rem;
+            color: #334155;
+            margin-top: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        /* =====================
+           NUMPAD OVERLAY
+        ===================== */
+        .numpad-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0);
+            z-index: 10;
+            pointer-events: none;
+            transition: background 0.2s;
+        }
+
+        .numpad-overlay.open {
+            background: rgba(0,0,0,0.5);
+            pointer-events: all;
+        }
+
+        .numpad-sheet {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: #111827;
+            border-top: 1px solid #1e293b;
+            border-radius: 20px 20px 0 0;
+            padding: 0 12px 24px;
+            transform: translateY(100%);
+            transition: transform 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+            z-index: 20;
+        }
+
+        .numpad-sheet.open {
+            transform: translateY(0);
+        }
+
+        .numpad-handle {
+            width: 36px;
+            height: 4px;
+            background: #334155;
+            border-radius: 2px;
+            margin: 10px auto 12px;
+        }
+
+        .numpad-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 6px 10px;
+            border-bottom: 1px solid #1e293b;
+            margin-bottom: 12px;
+        }
+
+        .numpad-info .denom-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .numpad-display {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #f1f5f9;
+            letter-spacing: -1px;
+            min-width: 80px;
+            text-align: right;
+        }
+
+        .numpad-display.rsd-active { color: #d4a017; }
+        .numpad-display.eur-active { color: #4a90d9; }
+
+        .numpad-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .np-btn {
+            background: #1e293b;
+            border: none;
+            border-radius: 12px;
+            color: #e2e8f0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            padding: 16px 0;
+            cursor: pointer;
+            transition: background 0.1s, transform 0.08s;
+            text-align: center;
+        }
+
+        .np-btn:active {
+            background: #263347;
+            transform: scale(0.94);
+        }
+
+        .np-btn.btn-del {
+            background: #1e293b;
+            color: #94a3b8;
+            font-size: 1.2rem;
+        }
+
+        .np-btn.btn-ok {
+            background: #d4a017;
+            color: #0f172a;
+            font-weight: 800;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+        }
+
+        .np-btn.btn-ok.eur-ok { background: #4a90d9; }
+        .np-btn.btn-ok:active { transform: scale(0.95); }
+    </style>
+</head>
+<body>
+
+<div class="app-header">
+    <h1>Brojac Novca</h1>
+    <p>Tapni na apoen da unesete kolicinu</p>
+</div>
+
+<div class="section-label rsd-label"><span>Srpski Dinari — RSD</span></div>
+<div id="rsd-box"></div>
+
+<div class="divider"></div>
+
+<div class="section-label eur-label"><span>Euri — EUR</span></div>
+<div id="eur-box"></div>
+
+<div class="totals-box">
+    <div class="row"><span class="lbl">Ukupno dinari</span><span class="val" id="t-rsd">0 RSD</span></div>
+    <div class="row"><span class="lbl">Ukupno euri</span><span class="val" id="t-eur">0 EUR</span></div>
+    <div class="row"><span class="lbl">Euri u dinare (x117)</span><span class="val" id="t-eur-rsd">0 RSD</span></div>
+</div>
+
+<div class="grand-row">
+    <span class="lbl">Ukupno sve</span>
+    <span class="val" id="t-grand">0 RSD</span>
+</div>
+
+<button class="btn-reset" onclick="resetAll()">Resetuj sve</button>
+<p class="rate-note">Kurs: 1 EUR = 117 RSD</p>
+
+<!-- NUMPAD -->
+<div class="numpad-overlay" id="overlay" onclick="closeNumpad()"></div>
+
+<div class="numpad-sheet" id="numpad">
+    <div class="numpad-handle"></div>
+    <div class="numpad-info">
+        <span class="denom-name" id="np-denom-name">—</span>
+        <span class="numpad-display" id="np-display">0</span>
+    </div>
+    <div class="numpad-grid">
+        <button class="np-btn" onclick="npKey('1')">1</button>
+        <button class="np-btn" onclick="npKey('2')">2</button>
+        <button class="np-btn" onclick="npKey('3')">3</button>
+        <button class="np-btn" onclick="npKey('4')">4</button>
+        <button class="np-btn" onclick="npKey('5')">5</button>
+        <button class="np-btn" onclick="npKey('6')">6</button>
+        <button class="np-btn" onclick="npKey('7')">7</button>
+        <button class="np-btn" onclick="npKey('8')">8</button>
+        <button class="np-btn" onclick="npKey('9')">9</button>
+        <button class="np-btn btn-del" onclick="npDel()">&#9003;</button>
+        <button class="np-btn" onclick="npKey('0')">0</button>
+        <button class="np-btn btn-ok" id="np-ok" onclick="npConfirm()">OK</button>
+    </div>
+</div>
+
+<script>
+var rsdNotes = [
+    {v:10,   lbl:'10',    css:'r10'},
+    {v:20,   lbl:'20',    css:'r20'},
+    {v:50,   lbl:'50',    css:'r50'},
+    {v:100,  lbl:'100',   css:'r100'},
+    {v:200,  lbl:'200',   css:'r200'},
+    {v:500,  lbl:'500',   css:'r500'},
+    {v:1000, lbl:'1.000', css:'r1000'},
+    {v:2000, lbl:'2.000', css:'r2000'},
+    {v:5000, lbl:'5.000', css:'r5000'}
+];
+
+var eurNotes = [
+    {v:5,   lbl:'5',   css:'e5'},
+    {v:10,  lbl:'10',  css:'e10'},
+    {v:20,  lbl:'20',  css:'e20'},
+    {v:50,  lbl:'50',  css:'e50'},
+    {v:100, lbl:'100', css:'e100'},
+    {v:200, lbl:'200', css:'e200'},
+    {v:500, lbl:'500', css:'e500'}
+];
+
+// Store quantities
+var data = {};
+
+var activeKey = null;
+var activeIsEur = false;
+var npBuffer = '';
+
+function fmt(n) { return n.toLocaleString('sr-RS'); }
+
+function buildCards(boxId, notes, prefix, cur, isEur) {
+    var box = document.getElementById(boxId);
+    for (var i = 0; i < notes.length; i++) {
+        var n = notes[i];
+        var key = prefix + n.v;
+        data[key] = 0;
+        var card = document.createElement('div');
+        card.className = 'note-card';
+        card.id = 'card-' + key;
+        card.setAttribute('data-key', key);
+        card.setAttribute('data-val', n.v);
+        card.setAttribute('data-cur', cur);
+        card.setAttribute('data-lbl', n.lbl + ' ' + cur);
+        card.setAttribute('data-iseur', isEur ? '1' : '0');
+        card.innerHTML =
+            '<div class="note-face ' + n.css + '">' +
+                '<div class="nv">' + n.lbl + '</div>' +
+                '<div class="nc">' + cur + '</div>' +
+            '</div>' +
+            '<div class="note-body">' +
+                '<div class="note-sub">' +
+                    '<div class="lbl">Iznos</div>' +
+                    '<div class="val" id="sub-' + key + '">0 ' + cur + '</div>' +
+                '</div>' +
+                '<div class="note-qty">' +
+                    '<div class="lbl">Kom</div>' +
+                    '<div class="qty-val" id="qty-' + key + '">0</div>' +
+                '</div>' +
+            '</div>';
+        card.addEventListener('click', function() {
+            var k = this.getAttribute('data-key');
+            var lbl = this.getAttribute('data-lbl');
+            var eur = this.getAttribute('data-iseur') === '1';
+            openNumpad(k, lbl, eur);
+        });
+        box.appendChild(card);
+    }
+}
+
+buildCards('rsd-box', rsdNotes, 'rsd', 'RSD', false);
+buildCards('eur-box', eurNotes, 'eur', 'EUR', true);
+
+function openNumpad(key, label, isEur) {
+    // deactivate previous
+    if (activeKey) {
+        var prev = document.getElementById('card-' + activeKey);
+        if (prev) { prev.classList.remove('active'); prev.classList.remove('active-eur'); }
+    }
+    activeKey = key;
+    activeIsEur = isEur;
+    npBuffer = data[key] > 0 ? String(data[key]) : '';
+
+    var card = document.getElementById('card-' + key);
+    card.classList.add(isEur ? 'active-eur' : 'active');
+
+    var disp = document.getElementById('np-display');
+    disp.textContent = npBuffer || '0';
+    disp.className = 'numpad-display ' + (isEur ? 'eur-active' : 'rsd-active');
+
+    document.getElementById('np-denom-name').textContent = label;
+
+    var okBtn = document.getElementById('np-ok');
+    okBtn.className = 'np-btn btn-ok' + (isEur ? ' eur-ok' : '');
+
+    document.getElementById('overlay').classList.add('open');
+    document.getElementById('numpad').classList.add('open');
+}
+
+function closeNumpad() {
+    if (activeKey) {
+        var prev = document.getElementById('card-' + activeKey);
+        if (prev) { prev.classList.remove('active'); prev.classList.remove('active-eur'); }
+    }
+    activeKey = null;
+    document.getElementById('overlay').classList.remove('open');
+    document.getElementById('numpad').classList.remove('open');
+}
+
+function npKey(d) {
+    if (npBuffer.length >= 5) return;
+    if (npBuffer === '' && d === '0') return;
+    npBuffer += d;
+    document.getElementById('np-display').textContent = npBuffer || '0';
+}
+
+function npDel() {
+    npBuffer = npBuffer.slice(0, -1);
+    document.getElementById('np-display').textContent = npBuffer || '0';
+}
+
+function npConfirm() {
+    if (!activeKey) return;
+    var qty = parseInt(npBuffer) || 0;
+    data[activeKey] = qty;
+
+    var qtyEl = document.getElementById('qty-' + activeKey);
+    qtyEl.textContent = qty;
+    qtyEl.className = 'qty-val' + (qty > 0 ? ' has-value' : '');
+
+    // Find denomination value from card
+    var card = document.getElementById('card-' + activeKey);
+    var denomVal = parseInt(card.getAttribute('data-val'));
+    var cur = card.getAttribute('data-cur');
+    var sub = qty * denomVal;
+    document.getElementById('sub-' + activeKey).textContent = fmt(sub) + ' ' + cur;
+
+    calc();
+    closeNumpad();
+}
+
+function calc() {
+    var totalRSD = 0;
+    for (var i = 0; i < rsdNotes.length; i++) {
+        var key = 'rsd' + rsdNotes[i].v;
+        totalRSD += (data[key] || 0) * rsdNotes[i].v;
+    }
+
+    var totalEUR = 0;
+    for (var j = 0; j < eurNotes.length; j++) {
+        var key2 = 'eur' + eurNotes[j].v;
+        totalEUR += (data[key2] || 0) * eurNotes[j].v;
+    }
+
+    var eurInRSD = totalEUR * 117;
+    var grand = totalRSD + eurInRSD;
+
+    document.getElementById('t-rsd').textContent     = fmt(totalRSD)  + ' RSD';
+    document.getElementById('t-eur').textContent     = fmt(totalEUR)  + ' EUR';
+    document.getElementById('t-eur-rsd').textContent = fmt(eurInRSD)  + ' RSD';
+    document.getElementById('t-grand').textContent   = fmt(grand)     + ' RSD';
+}
+
+function resetAll() {
+    for (var k in data) { data[k] = 0; }
+    for (var i = 0; i < rsdNotes.length; i++) {
+        var key = 'rsd' + rsdNotes[i].v;
+        document.getElementById('qty-' + key).textContent = '0';
+        document.getElementById('qty-' + key).className = 'qty-val';
+        document.getElementById('sub-' + key).textContent = '0 RSD';
+    }
+    for (var j = 0; j < eurNotes.length; j++) {
+        var key2 = 'eur' + eurNotes[j].v;
+        document.getElementById('qty-' + key2).textContent = '0';
+        document.getElementById('qty-' + key2).className = 'qty-val';
+        document.getElementById('sub-' + key2).textContent = '0 EUR';
+    }
+    document.getElementById('t-rsd').textContent     = '0 RSD';
+    document.getElementById('t-eur').textContent     = '0 EUR';
+    document.getElementById('t-eur-rsd').textContent = '0 RSD';
+    document.getElementById('t-grand').textContent   = '0 RSD';
+}
+</script>
+</body>
+</html>
