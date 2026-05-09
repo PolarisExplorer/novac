@@ -11,7 +11,7 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: #0f172a;
             color: #e2e8f0;
-            padding: 0 14px 200px;
+            padding: 0 14px 60px;
             min-height: 100vh;
         }
 
@@ -47,6 +47,7 @@
         .section-label span { padding-bottom: 3px; border-bottom: 2px solid; }
         .rsd-label span { border-color: #d4a017; color: #d4a017; }
         .eur-label span { border-color: #4a90d9; color: #4a90d9; }
+        .km-label  span { border-color: #34d399; color: #34d399; }
 
         /* CARD */
         .note-card {
@@ -62,13 +63,9 @@
             user-select: none;
         }
 
-        .note-card.active {
-            border-color: #d4a017;
-        }
-
-        .note-card.active-eur {
-            border-color: #4a90d9;
-        }
+        .note-card.active     { border-color: #d4a017; }
+        .note-card.active-eur { border-color: #4a90d9; }
+        .note-card.active-km  { border-color: #34d399; }
 
         .note-face {
             width: 88px;
@@ -96,6 +93,7 @@
             opacity: 0.65;
         }
 
+        /* RSD colors */
         .r10   { background: #1a1430; color: #a78bfa; }
         .r20   { background: #0d2218; color: #4ade80; }
         .r50   { background: #0d1f3c; color: #60a5fa; }
@@ -105,6 +103,8 @@
         .r1000 { background: #160d2e; color: #818cf8; }
         .r2000 { background: #0f1f33; color: #7dd3fc; }
         .r5000 { background: #2a0a1e; color: #f472b6; }
+
+        /* EUR colors */
         .e5    { background: #1a1e24; color: #94a3b8; }
         .e10   { background: #2a1000; color: #fdba74; }
         .e20   { background: #0d1f3c; color: #60a5fa; }
@@ -112,6 +112,16 @@
         .e100  { background: #0c2010; color: #4ade80; }
         .e200  { background: #241a00; color: #fbbf24; }
         .e500  { background: #1a0a2a; color: #c084fc; }
+
+        /* KM colors */
+        .k1    { background: #0a2018; color: #6ee7b7; }
+        .k2    { background: #082016; color: #34d399; }
+        .k5    { background: #0a2410; color: #4ade80; }
+        .k10   { background: #0d2a14; color: #86efac; }
+        .k20   { background: #0a1e1a; color: #5eead4; }
+        .k50   { background: #071a14; color: #2dd4bf; }
+        .k100  { background: #0a2218; color: #34d399; }
+        .k200  { background: #081c10; color: #6ee7b7; }
 
         .note-body {
             flex: 1;
@@ -135,9 +145,7 @@
             margin-top: 2px;
         }
 
-        .note-qty {
-            text-align: right;
-        }
+        .note-qty { text-align: right; }
 
         .note-qty .lbl {
             font-size: 0.68rem;
@@ -231,9 +239,9 @@
         }
 
         /* =====================
-           NUMPAD OVERLAY
+           INPUT OVERLAY (native keyboard)
         ===================== */
-        .numpad-overlay {
+        .input-overlay {
             position: fixed;
             inset: 0;
             background: rgba(0,0,0,0);
@@ -242,45 +250,45 @@
             transition: background 0.2s;
         }
 
-        .numpad-overlay.open {
+        .input-overlay.open {
             background: rgba(0,0,0,0.5);
             pointer-events: all;
         }
 
-        .numpad-sheet {
+        .input-sheet {
             position: fixed;
             bottom: 0; left: 0; right: 0;
             background: #111827;
             border-top: 1px solid #1e293b;
             border-radius: 20px 20px 0 0;
-            padding: 0 12px 24px;
+            padding: 0 16px 32px;
             transform: translateY(100%);
             transition: transform 0.25s cubic-bezier(0.32, 0.72, 0, 1);
             z-index: 20;
         }
 
-        .numpad-sheet.open {
+        .input-sheet.open {
             transform: translateY(0);
         }
 
-        .numpad-handle {
+        .input-handle {
             width: 36px;
             height: 4px;
             background: #334155;
             border-radius: 2px;
-            margin: 10px auto 12px;
+            margin: 10px auto 14px;
         }
 
-        .numpad-info {
+        .input-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 6px 10px;
+            padding-bottom: 12px;
             border-bottom: 1px solid #1e293b;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
         }
 
-        .numpad-info .denom-name {
+        .input-header .denom-name {
             font-size: 0.8rem;
             font-weight: 600;
             color: #64748b;
@@ -288,58 +296,56 @@
             letter-spacing: 1px;
         }
 
-        .numpad-display {
-            font-size: 2rem;
-            font-weight: 800;
-            color: #f1f5f9;
-            letter-spacing: -1px;
-            min-width: 80px;
-            text-align: right;
-        }
-
-        .numpad-display.rsd-active { color: #d4a017; }
-        .numpad-display.eur-active { color: #4a90d9; }
-
-        .numpad-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-        }
-
-        .np-btn {
-            background: #1e293b;
-            border: none;
-            border-radius: 12px;
-            color: #e2e8f0;
-            font-size: 1.5rem;
-            font-weight: 600;
-            padding: 16px 0;
-            cursor: pointer;
-            transition: background 0.1s, transform 0.08s;
-            text-align: center;
-        }
-
-        .np-btn:active {
-            background: #263347;
-            transform: scale(0.94);
-        }
-
-        .np-btn.btn-del {
-            background: #1e293b;
-            color: #94a3b8;
-            font-size: 1.2rem;
-        }
-
-        .np-btn.btn-ok {
+        .input-header .btn-ok {
             background: #d4a017;
             color: #0f172a;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.85rem;
             font-weight: 800;
-            font-size: 1rem;
+            padding: 8px 22px;
+            cursor: pointer;
             letter-spacing: 0.5px;
         }
 
-        .np-btn.btn-ok.eur-ok { background: #4a90d9; }
-        .np-btn.btn-ok:active { transform: scale(0.95); }
+        .input-header .btn-ok.eur-ok { background: #4a90d9; }
+        .input-header .btn-ok.km-ok  { background: #34d399; color: #0a2018; }
+
+        .qty-input-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .qty-input-wrap label {
+            font-size: 0.72rem;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+
+        #qty-input {
+            flex: 1;
+            background: #1e293b;
+            border: 2px solid #263347;
+            border-radius: 10px;
+            color: #f1f5f9;
+            font-size: 2rem;
+            font-weight: 800;
+            padding: 10px 14px;
+            text-align: right;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        #qty-input:focus {
+            border-color: #d4a017;
+        }
+
+        #qty-input.eur-focus:focus { border-color: #4a90d9; }
+        #qty-input.km-focus:focus  { border-color: #34d399; }
     </style>
 </head>
 <body>
@@ -357,10 +363,17 @@
 <div class="section-label eur-label"><span>Euri — EUR</span></div>
 <div id="eur-box"></div>
 
+<div class="divider"></div>
+
+<div class="section-label km-label"><span>Konvertibilne Marke — KM</span></div>
+<div id="km-box"></div>
+
 <div class="totals-box">
     <div class="row"><span class="lbl">Ukupno dinari</span><span class="val" id="t-rsd">0 RSD</span></div>
     <div class="row"><span class="lbl">Ukupno euri</span><span class="val" id="t-eur">0 EUR</span></div>
-    <div class="row"><span class="lbl">Euri u dinare (x117)</span><span class="val" id="t-eur-rsd">0 RSD</span></div>
+    <div class="row"><span class="lbl">Euri u dinare (×117)</span><span class="val" id="t-eur-rsd">0 RSD</span></div>
+    <div class="row"><span class="lbl">Ukupno marke</span><span class="val" id="t-km">0 KM</span></div>
+    <div class="row"><span class="lbl">Marke u dinare (×58)</span><span class="val" id="t-km-rsd">0 RSD</span></div>
 </div>
 
 <div class="grand-row">
@@ -369,30 +382,22 @@
 </div>
 
 <button class="btn-reset" onclick="resetAll()">Resetuj sve</button>
-<p class="rate-note">Kurs: 1 EUR = 117 RSD</p>
+<p class="rate-note">Kurs: 1 EUR = 117 RSD &nbsp;|&nbsp; 1 KM = 58 RSD</p>
 
-<!-- NUMPAD -->
-<div class="numpad-overlay" id="overlay" onclick="closeNumpad()"></div>
+<!-- INPUT OVERLAY (native keyboard) -->
+<div class="input-overlay" id="overlay" onclick="closeSheet()"></div>
 
-<div class="numpad-sheet" id="numpad">
-    <div class="numpad-handle"></div>
-    <div class="numpad-info">
-        <span class="denom-name" id="np-denom-name">—</span>
-        <span class="numpad-display" id="np-display">0</span>
+<div class="input-sheet" id="input-sheet">
+    <div class="input-handle"></div>
+    <div class="input-header">
+        <span class="denom-name" id="inp-denom-name">—</span>
+        <button class="btn-ok" id="inp-ok" onclick="confirmInput()">OK</button>
     </div>
-    <div class="numpad-grid">
-        <button class="np-btn" onclick="npKey('1')">1</button>
-        <button class="np-btn" onclick="npKey('2')">2</button>
-        <button class="np-btn" onclick="npKey('3')">3</button>
-        <button class="np-btn" onclick="npKey('4')">4</button>
-        <button class="np-btn" onclick="npKey('5')">5</button>
-        <button class="np-btn" onclick="npKey('6')">6</button>
-        <button class="np-btn" onclick="npKey('7')">7</button>
-        <button class="np-btn" onclick="npKey('8')">8</button>
-        <button class="np-btn" onclick="npKey('9')">9</button>
-        <button class="np-btn btn-del" onclick="npDel()">&#9003;</button>
-        <button class="np-btn" onclick="npKey('0')">0</button>
-        <button class="np-btn btn-ok" id="np-ok" onclick="npConfirm()">OK</button>
+    <div class="qty-input-wrap">
+        <label>Kom</label>
+        <input id="qty-input" type="number" inputmode="numeric" pattern="[0-9]*"
+               min="0" max="99999" placeholder="0"
+               onkeydown="if(event.key==='Enter') confirmInput()">
     </div>
 </div>
 
@@ -419,16 +424,24 @@ var eurNotes = [
     {v:500, lbl:'500', css:'e500'}
 ];
 
-// Store quantities
-var data = {};
+var kmNotes = [
+    {v:1,   lbl:'1',   css:'k1'},
+    {v:2,   lbl:'2',   css:'k2'},
+    {v:5,   lbl:'5',   css:'k5'},
+    {v:10,  lbl:'10',  css:'k10'},
+    {v:20,  lbl:'20',  css:'k20'},
+    {v:50,  lbl:'50',  css:'k50'},
+    {v:100, lbl:'100', css:'k100'},
+    {v:200, lbl:'200', css:'k200'}
+];
 
+var data = {};
 var activeKey = null;
-var activeIsEur = false;
-var npBuffer = '';
+var activeType = 'rsd'; // 'rsd' | 'eur' | 'km'
 
 function fmt(n) { return n.toLocaleString('sr-RS'); }
 
-function buildCards(boxId, notes, prefix, cur, isEur) {
+function buildCards(boxId, notes, prefix, cur, type) {
     var box = document.getElementById(boxId);
     for (var i = 0; i < notes.length; i++) {
         var n = notes[i];
@@ -441,7 +454,7 @@ function buildCards(boxId, notes, prefix, cur, isEur) {
         card.setAttribute('data-val', n.v);
         card.setAttribute('data-cur', cur);
         card.setAttribute('data-lbl', n.lbl + ' ' + cur);
-        card.setAttribute('data-iseur', isEur ? '1' : '0');
+        card.setAttribute('data-type', type);
         card.innerHTML =
             '<div class="note-face ' + n.css + '">' +
                 '<div class="nv">' + n.lbl + '</div>' +
@@ -458,76 +471,75 @@ function buildCards(boxId, notes, prefix, cur, isEur) {
                 '</div>' +
             '</div>';
         card.addEventListener('click', function() {
-            var k = this.getAttribute('data-key');
-            var lbl = this.getAttribute('data-lbl');
-            var eur = this.getAttribute('data-iseur') === '1';
-            openNumpad(k, lbl, eur);
+            openSheet(
+                this.getAttribute('data-key'),
+                this.getAttribute('data-lbl'),
+                this.getAttribute('data-type')
+            );
         });
         box.appendChild(card);
     }
 }
 
-buildCards('rsd-box', rsdNotes, 'rsd', 'RSD', false);
-buildCards('eur-box', eurNotes, 'eur', 'EUR', true);
+buildCards('rsd-box', rsdNotes, 'rsd', 'RSD', 'rsd');
+buildCards('eur-box', eurNotes, 'eur', 'EUR', 'eur');
+buildCards('km-box',  kmNotes,  'km',  'KM',  'km');
 
-function openNumpad(key, label, isEur) {
-    // deactivate previous
+function openSheet(key, label, type) {
     if (activeKey) {
         var prev = document.getElementById('card-' + activeKey);
-        if (prev) { prev.classList.remove('active'); prev.classList.remove('active-eur'); }
+        if (prev) prev.classList.remove('active', 'active-eur', 'active-km');
     }
     activeKey = key;
-    activeIsEur = isEur;
-    npBuffer = data[key] > 0 ? String(data[key]) : '';
+    activeType = type;
 
     var card = document.getElementById('card-' + key);
-    card.classList.add(isEur ? 'active-eur' : 'active');
+    if (type === 'eur') card.classList.add('active-eur');
+    else if (type === 'km') card.classList.add('active-km');
+    else card.classList.add('active');
 
-    var disp = document.getElementById('np-display');
-    disp.textContent = npBuffer || '0';
-    disp.className = 'numpad-display ' + (isEur ? 'eur-active' : 'rsd-active');
+    document.getElementById('inp-denom-name').textContent = label;
 
-    document.getElementById('np-denom-name').textContent = label;
+    var okBtn = document.getElementById('inp-ok');
+    okBtn.className = 'btn-ok';
+    if (type === 'eur') okBtn.classList.add('eur-ok');
+    else if (type === 'km') okBtn.classList.add('km-ok');
 
-    var okBtn = document.getElementById('np-ok');
-    okBtn.className = 'np-btn btn-ok' + (isEur ? ' eur-ok' : '');
+    var inp = document.getElementById('qty-input');
+    inp.className = '';
+    if (type === 'eur') inp.classList.add('eur-focus');
+    else if (type === 'km') inp.classList.add('km-focus');
+
+    inp.value = data[key] > 0 ? data[key] : '';
 
     document.getElementById('overlay').classList.add('open');
-    document.getElementById('numpad').classList.add('open');
+    document.getElementById('input-sheet').classList.add('open');
+
+    // Focus input so phone keyboard opens immediately
+    setTimeout(function() { inp.focus(); inp.select(); }, 80);
 }
 
-function closeNumpad() {
+function closeSheet() {
     if (activeKey) {
         var prev = document.getElementById('card-' + activeKey);
-        if (prev) { prev.classList.remove('active'); prev.classList.remove('active-eur'); }
+        if (prev) prev.classList.remove('active', 'active-eur', 'active-km');
     }
     activeKey = null;
+    document.getElementById('qty-input').blur();
     document.getElementById('overlay').classList.remove('open');
-    document.getElementById('numpad').classList.remove('open');
+    document.getElementById('input-sheet').classList.remove('open');
 }
 
-function npKey(d) {
-    if (npBuffer.length >= 5) return;
-    if (npBuffer === '' && d === '0') return;
-    npBuffer += d;
-    document.getElementById('np-display').textContent = npBuffer || '0';
-}
-
-function npDel() {
-    npBuffer = npBuffer.slice(0, -1);
-    document.getElementById('np-display').textContent = npBuffer || '0';
-}
-
-function npConfirm() {
+function confirmInput() {
     if (!activeKey) return;
-    var qty = parseInt(npBuffer) || 0;
+    var raw = document.getElementById('qty-input').value;
+    var qty = Math.max(0, parseInt(raw) || 0);
     data[activeKey] = qty;
 
     var qtyEl = document.getElementById('qty-' + activeKey);
     qtyEl.textContent = qty;
     qtyEl.className = 'qty-val' + (qty > 0 ? ' has-value' : '');
 
-    // Find denomination value from card
     var card = document.getElementById('card-' + activeKey);
     var denomVal = parseInt(card.getAttribute('data-val'));
     var cur = card.getAttribute('data-cur');
@@ -535,48 +547,60 @@ function npConfirm() {
     document.getElementById('sub-' + activeKey).textContent = fmt(sub) + ' ' + cur;
 
     calc();
-    closeNumpad();
+    closeSheet();
 }
 
 function calc() {
     var totalRSD = 0;
     for (var i = 0; i < rsdNotes.length; i++) {
-        var key = 'rsd' + rsdNotes[i].v;
-        totalRSD += (data[key] || 0) * rsdNotes[i].v;
+        totalRSD += (data['rsd' + rsdNotes[i].v] || 0) * rsdNotes[i].v;
     }
 
     var totalEUR = 0;
     for (var j = 0; j < eurNotes.length; j++) {
-        var key2 = 'eur' + eurNotes[j].v;
-        totalEUR += (data[key2] || 0) * eurNotes[j].v;
+        totalEUR += (data['eur' + eurNotes[j].v] || 0) * eurNotes[j].v;
+    }
+
+    var totalKM = 0;
+    for (var k = 0; k < kmNotes.length; k++) {
+        totalKM += (data['km' + kmNotes[k].v] || 0) * kmNotes[k].v;
     }
 
     var eurInRSD = totalEUR * 117;
-    var grand = totalRSD + eurInRSD;
+    var kmInRSD  = totalKM  * 58;
+    var grand    = totalRSD + eurInRSD + kmInRSD;
 
     document.getElementById('t-rsd').textContent     = fmt(totalRSD)  + ' RSD';
     document.getElementById('t-eur').textContent     = fmt(totalEUR)  + ' EUR';
     document.getElementById('t-eur-rsd').textContent = fmt(eurInRSD)  + ' RSD';
+    document.getElementById('t-km').textContent      = fmt(totalKM)   + ' KM';
+    document.getElementById('t-km-rsd').textContent  = fmt(kmInRSD)   + ' RSD';
     document.getElementById('t-grand').textContent   = fmt(grand)     + ' RSD';
 }
 
 function resetAll() {
     for (var k in data) { data[k] = 0; }
-    for (var i = 0; i < rsdNotes.length; i++) {
-        var key = 'rsd' + rsdNotes[i].v;
-        document.getElementById('qty-' + key).textContent = '0';
-        document.getElementById('qty-' + key).className = 'qty-val';
-        document.getElementById('sub-' + key).textContent = '0 RSD';
-    }
-    for (var j = 0; j < eurNotes.length; j++) {
-        var key2 = 'eur' + eurNotes[j].v;
-        document.getElementById('qty-' + key2).textContent = '0';
-        document.getElementById('qty-' + key2).className = 'qty-val';
-        document.getElementById('sub-' + key2).textContent = '0 EUR';
-    }
+
+    var allNotes = [
+        {notes: rsdNotes, prefix: 'rsd', cur: 'RSD'},
+        {notes: eurNotes, prefix: 'eur', cur: 'EUR'},
+        {notes: kmNotes,  prefix: 'km',  cur: 'KM'}
+    ];
+
+    allNotes.forEach(function(group) {
+        group.notes.forEach(function(n) {
+            var key = group.prefix + n.v;
+            document.getElementById('qty-' + key).textContent = '0';
+            document.getElementById('qty-' + key).className = 'qty-val';
+            document.getElementById('sub-' + key).textContent = '0 ' + group.cur;
+        });
+    });
+
     document.getElementById('t-rsd').textContent     = '0 RSD';
     document.getElementById('t-eur').textContent     = '0 EUR';
     document.getElementById('t-eur-rsd').textContent = '0 RSD';
+    document.getElementById('t-km').textContent      = '0 KM';
+    document.getElementById('t-km-rsd').textContent  = '0 RSD';
     document.getElementById('t-grand').textContent   = '0 RSD';
 }
 </script>
