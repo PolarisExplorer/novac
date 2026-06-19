@@ -364,10 +364,10 @@ function fmt(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " "); }
 function buildCards(boxId, notes, prefix, cur, type) {
     var box = document.getElementById(boxId);
     for (var i = 0; i < notes.length; i++) {
-        let n = notes[i];
-        let key = prefix + n.v;
+        var n = notes[i];
+        var key = prefix + n.v;
         data[key] = 0;
-        let card = document.createElement('div');
+        var card = document.createElement('div');
         card.className = 'note-card';
         card.id = 'card-' + key;
         card.setAttribute('data-key', key);
@@ -387,15 +387,20 @@ function buildCards(boxId, notes, prefix, cur, type) {
                 '</div>' +
                 '<div class="note-qty">' +
                     '<div class="lbl">Kom</div>' +
-                    '<input type="number" inputmode="numeric" pattern="[0-9]*" class="qty-input-inline" id="qty-' + key + '" placeholder="0">' +
+                    '<input type="number" inputmode="numeric" pattern="[0-9]*" class="qty-input-inline" id="qty-' + key + '" placeholder="0" data-key="' + key + '" data-val="' + n.v + '" data-cur="' + cur + '">' +
                 '</div>' +
             '</div>';
             
-        let inp = card.querySelector('.qty-input-inline');
+        var inp = card.querySelector('.qty-input-inline');
         inp.addEventListener('input', function() {
             var raw = this.value;
             var qty = Math.max(0, parseInt(raw) || 0);
-            data[key] = qty;
+            
+            var localKey = this.getAttribute('data-key');
+            var localVal = parseInt(this.getAttribute('data-val'));
+            var localCur = this.getAttribute('data-cur');
+            
+            data[localKey] = qty;
             
             if (qty > 0) {
                 this.classList.add('has-value');
@@ -403,14 +408,14 @@ function buildCards(boxId, notes, prefix, cur, type) {
                 this.classList.remove('has-value');
             }
 
-            var sub = qty * n.v;
-            document.getElementById('sub-' + key).textContent = fmt(sub) + ' ' + cur;
+            var sub = qty * localVal;
+            document.getElementById('sub-' + localKey).textContent = fmt(sub) + ' ' + localCur;
             calc();
         });
         
         card.addEventListener('click', function(e) {
-            if (e.target !== inp) {
-                inp.focus();
+            if (e.target.tagName !== 'INPUT') {
+                this.querySelector('.qty-input-inline').focus();
             }
         });
         
