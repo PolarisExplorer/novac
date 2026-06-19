@@ -359,15 +359,15 @@ var kmNotes = [
 
 var data = {};
 
-function fmt(n) { return n.toLocaleString('sr-RS'); }
+function fmt(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " "); }
 
 function buildCards(boxId, notes, prefix, cur, type) {
     var box = document.getElementById(boxId);
     for (var i = 0; i < notes.length; i++) {
-        var n = notes[i];
-        var key = prefix + n.v;
+        let n = notes[i];
+        let key = prefix + n.v;
         data[key] = 0;
-        var card = document.createElement('div');
+        let card = document.createElement('div');
         card.className = 'note-card';
         card.id = 'card-' + key;
         card.setAttribute('data-key', key);
@@ -391,7 +391,7 @@ function buildCards(boxId, notes, prefix, cur, type) {
                 '</div>' +
             '</div>';
             
-        var inp = card.querySelector('.qty-input-inline');
+        let inp = card.querySelector('.qty-input-inline');
         inp.addEventListener('input', function() {
             var raw = this.value;
             var qty = Math.max(0, parseInt(raw) || 0);
