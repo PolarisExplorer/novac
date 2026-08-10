@@ -3,125 +3,249 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Brojac Novca</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    <title>Brojač Novca & Pametni Kalkulator Isplate</title>
+    <!-- Google Fonts: Cormorant Garamond (Naslovi) + Montserrat (Tekst) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,600&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #0f172a;
-            color: #e2e8f0;
-            padding: 0 14px 60px;
-            min-height: 100vh;
+    <style>
+        :root {
+            --bg-main: #060608;
+            --bg-card: rgba(18, 18, 23, 0.85);
+            --bg-card-hover: rgba(26, 26, 34, 0.95);
+            --bg-input: #09090c;
+            --border-gold: rgba(212, 175, 55, 0.25);
+            --border-gold-bright: rgba(212, 175, 55, 0.75);
+            --gold-primary: #d4af37;
+            --gold-light: #f7e7b4;
+            --gold-dark: #996515;
+            --gold-gradient: linear-gradient(135deg, #f7e7b4 0%, #d4af37 50%, #996515 100%);
+            --gold-gradient-dark: linear-gradient(135deg, #221d12 0%, #121217 100%);
+            --text-primary: #faf8f5;
+            --text-secondary: #c8c2b5;
+            --text-muted: #888172;
+            --font-title: 'Cormorant Garamond', Georgia, serif;
+            --font-body: 'Montserrat', -apple-system, sans-serif;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --shadow-gold: 0 8px 32px rgba(212, 175, 55, 0.15);
         }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            padding: 0 16px 80px;
+            min-height: 100vh;
+            line-height: 1.5;
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.1) 0%, transparent 60%),
+                radial-gradient(circle at 100% 100%, rgba(153, 101, 21, 0.06) 0%, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+        }
+
+        /* HEADER */
         .app-header {
             text-align: center;
-            padding: 22px 0 14px;
-            border-bottom: 1px solid #1e293b;
-            margin-bottom: 6px;
+            padding: 36px 0 24px;
+            border-bottom: 1px solid var(--border-gold);
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .app-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 30%;
+            right: 30%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold-primary), transparent);
         }
 
         .app-header h1 {
-            font-size: 1.35rem;
+            font-family: var(--font-title);
+            font-size: 2.35rem;
             font-weight: 700;
-            color: #f1f5f9;
-            letter-spacing: 0.5px;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-transform: uppercase;
+            text-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
         }
 
         .app-header p {
-            font-size: 0.72rem;
-            color: #475569;
-            margin-top: 3px;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            letter-spacing: 0.5px;
+            font-weight: 500;
         }
 
-        .section-label {
-            font-size: 0.68rem;
+        /* NAVIGATION TABS */
+        .nav-tabs {
+            display: flex;
+            background: #0d0d12;
+            padding: 4px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-gold);
+            margin-bottom: 24px;
+            gap: 4px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 14px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
             font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            padding: 18px 2px 8px;
-            color: #64748b;
+            font-size: 0.82rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: var(--font-body);
+            letter-spacing: 0.5px;
         }
 
-        .section-label span { padding-bottom: 3px; border-bottom: 2px solid; }
-        .rsd-label span { border-color: #d4a017; color: #d4a017; }
-        .eur-label span { border-color: #4a90d9; color: #4a90d9; }
-        .km-label  span { border-color: #34d399; color: #34d399; }
+        .tab-btn.active {
+            background: var(--gold-gradient);
+            color: #08080a;
+            box-shadow: 0 4px 18px rgba(212, 175, 55, 0.3);
+            font-weight: 800;
+        }
 
-        /* CARD */
+        .tab-btn:hover:not(.active) {
+            color: var(--gold-light);
+            background: rgba(212, 175, 55, 0.08);
+        }
+
+        /* TAB PANELS */
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* SECTION LABELS */
+        .section-label {
+            font-family: var(--font-title);
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 16px 4px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .section-label span {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding-bottom: 2px;
+            border-bottom: 2px solid;
+        }
+
+        .rsd-label span { border-color: var(--gold-primary); color: var(--gold-primary); }
+        .eur-label span { border-color: #e2c275; color: #e2c275; }
+        .km-label  span { border-color: #c5a059; color: #c5a059; }
+
+        .sec-subtotal {
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--gold-light);
+        }
+
+        /* CARD STYLES */
         .note-card {
             display: flex;
             align-items: center;
-            background: #1e293b;
-            border-radius: 10px;
-            margin-bottom: 8px;
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            margin-bottom: 10px;
             overflow: hidden;
-            border: 1px solid #263347;
-            transition: border-color 0.15s;
-            cursor: pointer;
-            user-select: none;
+            border: 1px solid var(--border-gold);
+            transition: all 0.2s ease;
+            position: relative;
         }
 
-        .note-card:focus-within { border-color: #d4a017; }
-        .note-card[data-type="eur"]:focus-within { border-color: #4a90d9; }
-        .note-card[data-type="km"]:focus-within { border-color: #34d399; }
+        .note-card:focus-within, .note-card:hover {
+            border-color: var(--gold-primary);
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.18);
+            transform: translateY(-1px);
+        }
 
         .note-face {
-            width: 88px;
-            height: 62px;
+            width: 90px;
+            height: 68px;
             flex-shrink: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            font-weight: 800;
+            background: #181610;
+            border-right: 1px solid var(--border-gold);
         }
 
         .note-face .nv {
-            font-size: 1.3rem;
-            font-weight: 800;
+            font-family: var(--font-title);
+            font-size: 1.6rem;
             line-height: 1;
-            letter-spacing: -0.5px;
+            letter-spacing: 0.5px;
+            color: var(--gold-light);
         }
 
         .note-face .nc {
             font-size: 0.58rem;
-            font-weight: 600;
-            letter-spacing: 3px;
+            font-weight: 700;
+            letter-spacing: 2px;
             text-transform: uppercase;
             margin-top: 3px;
-            opacity: 0.65;
+            color: var(--gold-primary);
+            opacity: 0.85;
         }
 
-        /* RSD colors */
-        .r10   { background: #1a1430; color: #a78bfa; }
-        .r20   { background: #0d2218; color: #4ade80; }
-        .r50   { background: #0d1f3c; color: #60a5fa; }
-        .r100  { background: #0c1c2e; color: #38bdf8; }
-        .r200  { background: #2a1800; color: #fb923c; }
-        .r500  { background: #2a0a0a; color: #f87171; }
-        .r1000 { background: #160d2e; color: #818cf8; }
-        .r2000 { background: #0f1f33; color: #7dd3fc; }
-        .r5000 { background: #2a0a1e; color: #f472b6; }
-
-        /* EUR colors */
-        .e5    { background: #1a1e24; color: #94a3b8; }
-        .e10   { background: #2a1000; color: #fdba74; }
-        .e20   { background: #0d1f3c; color: #60a5fa; }
-        .e50   { background: #2a1400; color: #fb923c; }
-        .e100  { background: #0c2010; color: #4ade80; }
-        .e200  { background: #241a00; color: #fbbf24; }
-        .e500  { background: #1a0a2a; color: #c084fc; }
-
-        /* KM colors */
-        .k1    { background: #0a2018; color: #6ee7b7; }
-        .k2    { background: #082016; color: #34d399; }
-        .k5    { background: #0a2410; color: #4ade80; }
-        .k10   { background: #0d2a14; color: #86efac; }
-        .k20   { background: #0a1e1a; color: #5eead4; }
-        .k50   { background: #071a14; color: #2dd4bf; }
-        .k100  { background: #0a2218; color: #34d399; }
-        .k200  { background: #081c10; color: #6ee7b7; }
+        /* CARD ACCENTS */
+        .r10, .r20, .r50, .r100, .r200, .r500, .r1000, .r2000, .r5000,
+        .e5, .e10, .e20, .e50, .e100, .e200, .e500,
+        .k1, .k2, .k5, .k10, .k20, .k50, .k100, .k200 {
+            background: linear-gradient(135deg, #1f1b10 0%, #121117 100%);
+        }
 
         .note-body {
             flex: 1;
@@ -132,125 +256,51 @@
         }
 
         .note-sub .lbl {
-            font-size: 0.68rem;
-            color: #475569;
+            font-size: 0.65rem;
+            color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-weight: 700;
+            letter-spacing: 1px;
         }
 
         .note-sub .val {
-            font-size: 0.95rem;
+            font-size: 1rem;
             font-weight: 700;
-            color: #e2e8f0;
-            margin-top: 2px;
+            color: var(--text-primary);
+            margin-top: 1px;
         }
 
-        .note-qty { text-align: right; }
-
-        .note-qty .lbl {
-            font-size: 0.68rem;
-            color: #475569;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-
-
-        /* DIVIDER */
-        .divider { height: 1px; background: #1e293b; margin: 18px 0; }
-
-        /* TOTALS */
-        .totals-box {
-            background: #1e293b;
-            border-radius: 12px;
-            border: 1px solid #263347;
-            overflow: hidden;
-            margin-top: 20px;
-        }
-
-        .totals-box .row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 11px 16px;
-            border-bottom: 1px solid #263347;
-            font-size: 0.88rem;
-        }
-
-        .totals-box .row:last-child { border-bottom: none; }
-        .totals-box .row .lbl { color: #64748b; }
-        .totals-box .row .val { font-weight: 700; color: #e2e8f0; }
-
-        .grand-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px;
-            background: #152033;
-            border-radius: 12px;
-            border: 1px solid #1d3252;
-            margin-top: 10px;
-        }
-
-        .grand-row .lbl {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: #64748b;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .grand-row .val-wrapper {
+        .note-controls {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 6px;
         }
 
-        .grand-row .val {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: #d4a017;
-        }
-
-        .btn-copy {
-            background: #2a3b54;
-            color: #94a3b8;
-            border: 1px solid #334155;
+        .btn-step {
+            width: 34px;
+            height: 34px;
             border-radius: 8px;
-            padding: 6px 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            background: #1c1c24;
+            border: 1px solid var(--border-gold);
+            color: var(--gold-light);
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            transition: all 0.2s;
+            user-select: none;
+            transition: all 0.15s ease;
         }
 
-        .btn-copy:active {
-            background: #d4a017;
-            color: #0f172a;
-            border-color: #d4a017;
+        .btn-step:hover {
+            background: var(--gold-primary);
+            color: #08080a;
+            border-color: var(--gold-primary);
         }
 
-        .btn-reset {
-            width: 100%;
-            padding: 13px;
-            margin-top: 12px;
-            background: transparent;
-            color: #475569;
-            border: 1px solid #263347;
-            border-radius: 10px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            cursor: pointer;
-        }
-
-        .rate-note {
-            text-align: center;
-            font-size: 0.68rem;
-            color: #334155;
-            margin-top: 12px;
-            letter-spacing: 0.5px;
+        .btn-step:active {
+            transform: scale(0.92);
         }
 
         .qty-input-inline {
@@ -258,70 +308,436 @@
             border: none;
             font-size: 1.35rem;
             font-weight: 800;
-            color: #94a3b8;
-            margin-top: 1px;
-            width: 70px;
-            text-align: right;
+            color: var(--text-muted);
+            width: 65px;
+            text-align: center;
             outline: none;
             -webkit-appearance: none;
             appearance: none;
-            padding: 0;
-            font-family: inherit;
-        }
-        
-        .qty-input-inline::placeholder {
-            color: #94a3b8;
+            padding: 2px 0;
+            font-family: var(--font-body);
         }
 
-        .qty-input-inline:focus {
-            color: #f1f5f9;
+        .qty-input-inline:focus, .qty-input-inline.has-value {
+            color: #ffffff;
         }
 
-        .qty-input-inline.has-value {
-            color: #f1f5f9;
+        /* DIVIDER */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, var(--border-gold) 50%, transparent 100%);
+            margin: 24px 0;
+        }
+
+        /* TOTALS BOX */
+        .totals-box {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-gold);
+            overflow: hidden;
+            margin-top: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .totals-box .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 20px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.12);
+            font-size: 0.9rem;
+        }
+
+        .totals-box .row:last-child { border-bottom: none; }
+        .totals-box .row .lbl { color: var(--text-secondary); font-weight: 500; }
+        .totals-box .row .val { font-weight: 700; color: var(--text-primary); }
+
+        .grand-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: var(--gold-gradient-dark);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-gold-bright);
+            margin-top: 16px;
+            box-shadow: 0 12px 30px rgba(212, 175, 55, 0.15);
+        }
+
+        .grand-row .lbl {
+            font-family: var(--font-title);
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--gold-light);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .grand-row .val-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .grand-row .val {
+            font-family: var(--font-title);
+            font-size: 2.1rem;
+            font-weight: 700;
+            color: var(--gold-light);
+        }
+
+        /* BUTTONS */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .btn-main {
+            flex: 1;
+            padding: 16px;
+            background: var(--gold-gradient);
+            color: #08080a;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-family: var(--font-body);
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+            text-transform: uppercase;
+        }
+
+        .btn-main:hover {
+            box-shadow: 0 6px 24px rgba(212, 175, 55, 0.45);
+            transform: translateY(-2px);
+        }
+
+        .btn-main:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            padding: 12px 18px;
+            background: rgba(26, 26, 34, 0.8);
+            color: var(--gold-light);
+            border: 1px solid var(--border-gold);
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: var(--font-body);
+        }
+
+        .btn-secondary:hover {
+            color: #ffffff;
+            border-color: var(--gold-primary);
+            background: rgba(212, 175, 55, 0.12);
+        }
+
+        .btn-reset {
+            width: 100%;
+            padding: 14px;
+            margin-top: 14px;
+            background: rgba(239, 68, 68, 0.06);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: var(--radius-md);
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: var(--font-body);
+        }
+
+        .btn-reset:hover {
+            background: rgba(239, 68, 68, 0.14);
+        }
+
+        .rate-note {
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 16px;
+            letter-spacing: 0.5px;
+        }
+
+        /* PAYOUT CALCULATOR FORM STYLES */
+        .card-panel {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-gold);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+        }
+
+        .card-panel h2 {
+            font-family: var(--font-title);
+            font-size: 1.6rem;
+            color: var(--gold-light);
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--gold-primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-gold);
+            border-radius: var(--radius-md);
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 700;
+            outline: none;
+            font-family: var(--font-body);
+            transition: border-color 0.2s ease;
+        }
+
+        .form-input:focus, .form-select:focus {
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 12px rgba(212, 175, 55, 0.25);
+        }
+
+        .payout-result-card {
+            background: #101015;
+            border: 1px solid var(--border-gold-bright);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-top: 24px;
+        }
+
+        .payout-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-gold);
+            margin-bottom: 16px;
+        }
+
+        .payout-title {
+            font-family: var(--font-title);
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--gold-light);
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 14px;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .badge-success { background: rgba(212, 175, 55, 0.2); color: var(--gold-light); border: 1px solid var(--border-gold); }
+        .badge-warning { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+
+        .payout-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #181820;
+            border: 1px solid var(--border-gold);
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            margin-bottom: 10px;
+        }
+
+        .payout-item-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .payout-item-tag {
+            font-family: var(--font-title);
+            font-weight: 700;
+            font-size: 1rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: #221f16;
+            color: var(--gold-light);
+            border: 1px solid var(--border-gold);
+        }
+
+        .payout-item-qty {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .payout-item-sub {
+            font-family: var(--font-title);
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--gold-light);
+        }
+
+        /* HIDDEN PRINT AREA */
+        #pdf-print-area {
+            display: none;
+        }
+
+        /* PERFECT 1-PAGE PRINT STYLES - ZERO EXTRA BLANK PAGES */
+        @media print {
+            body > *:not(#pdf-print-area) {
+                display: none !important;
+            }
+            #pdf-print-area {
+                display: block !important;
+                position: relative !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: #ffffff !important;
+                color: #000000 !important;
+            }
+            @page {
+                size: A4 portrait;
+                margin: 8mm 10mm;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="app-header">
-    <h1>Brojac Novca</h1>
-    <p>Tapni na apoen da unesete količinu</p>
-</div>
+<div class="container" style="padding-top: 24px;">
 
-<div class="section-label rsd-label"><span> Dinari — RSD</span></div>
-<div id="rsd-box"></div>
+    <!-- TAB NAVIGATION -->
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('counter')">
+            <span>Brojač novca</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('payout')">
+            <span>Kalkulator isplate</span>
+        </button>
+    </div>
 
-<div class="divider"></div>
+    <!-- TAB 1: BROJAČ NOVCA -->
+    <div id="tab-counter" class="tab-panel active">
+        <div class="section-label rsd-label">
+            <span>Dinari — RSD</span>
+            <span id="rsd-sec-total" class="sec-subtotal">0 RSD</span>
+        </div>
+        <div id="rsd-box"></div>
 
-<div class="section-label eur-label"><span>Euri — EUR</span></div>
-<div id="eur-box"></div>
+        <div class="divider"></div>
 
-<div class="divider"></div>
+        <div class="section-label eur-label">
+            <span>Euri — EUR</span>
+            <span id="eur-sec-total" class="sec-subtotal">0 EUR</span>
+        </div>
+        <div id="eur-box"></div>
 
-<div class="section-label km-label"><span>Konvertibilne Marke — KM</span></div>
-<div id="km-box"></div>
+        <div class="divider"></div>
 
-<div class="totals-box">
-    <div class="row"><span class="lbl">Ukupno dinari</span><span class="val" id="t-rsd">0 RSD</span></div>
-    <div class="row"><span class="lbl">Ukupno euri</span><span class="val" id="t-eur">0 EUR</span></div>
-    <div class="row"><span class="lbl">Euri u dinare (×117)</span><span class="val" id="t-eur-rsd">0 RSD</span></div>
-    <div class="row"><span class="lbl">Ukupno marke</span><span class="val" id="t-km">0 KM</span></div>
-    <div class="row"><span class="lbl">Marke u dinare (×58)</span><span class="val" id="t-km-rsd">0 RSD</span></div>
-</div>
+        <div class="section-label km-label">
+            <span>Konvertibilne Marke — KM</span>
+            <span id="km-sec-total" class="sec-subtotal">0 KM</span>
+        </div>
+        <div id="km-box"></div>
 
-<div class="grand-row">
-    <span class="lbl">Ukupno sve</span>
-    <div class="val-wrapper">
-        <span class="val" id="t-grand">0 RSD</span>
-        <button class="btn-copy" id="copy-btn" onclick="copyGrandTotal()">Kopiraj</button>
+        <div class="totals-box">
+            <div class="row"><span class="lbl">Ukupno dinari</span><span class="val" id="t-rsd">0 RSD</span></div>
+            <div class="row"><span class="lbl">Ukupno euri</span><span class="val" id="t-eur">0 EUR</span></div>
+            <div class="row"><span class="lbl">Euri u dinare (×117)</span><span class="val" id="t-eur-rsd">0 RSD</span></div>
+            <div class="row"><span class="lbl">Ukupno marke</span><span class="val" id="t-km">0 KM</span></div>
+            <div class="row"><span class="lbl">Marke u dinare (×58)</span><span class="val" id="t-km-rsd">0 RSD</span></div>
+        </div>
+
+        <div class="grand-row">
+            <span class="lbl">Ukupno sve</span>
+            <div class="val-wrapper">
+                <span class="val" id="t-grand">0 RSD</span>
+                <button class="btn-secondary" id="copy-btn" onclick="copyGrandTotal()">Kopiraj</button>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-main" onclick="exportPDF('inventory')">
+                <span>Sačuvaj kao PDF (Brojanje)</span>
+            </button>
+        </div>
+
+        <button class="btn-reset" onclick="confirmResetAll()">Resetuj sve novčanice</button>
+        <p class="rate-note">Kurs: 1 EUR = 117 RSD &nbsp;|&nbsp; 1 KM = 58 RSD</p>
+    </div>
+
+    <!-- TAB 2: KALKULATOR ISPLATE -->
+    <div id="tab-payout" class="tab-panel">
+        <div class="card-panel">
+            <h2>Pravljenje Isplate</h2>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 20px;">
+                Unesi željeni iznos (npr. 14.000). Program kalkuliše tačan zbir novčanica kako bi dobio tačno traženi iznos!
+            </p>
+
+            <div class="form-group">
+                <label class="form-label">Željeni iznos za isplatu</label>
+                <input type="number" id="payout-amount" class="form-input" placeholder="npr. 14000" inputmode="numeric">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Valuta za isplatu</label>
+                <select id="payout-currency" class="form-select">
+                    <option value="rsd" selected>RSD — Srpski dinar</option>
+                    <option value="km">KM — Konvertibilna marka</option>
+                    <option value="eur">EUR — Euro</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Prioritet novčanica</label>
+                <select id="payout-strategy" class="form-select">
+                    <option value="user" selected>Tvoj prioritet (100 i 200 prvo → 50 → 500 → 1000...)</option>
+                    <option value="large">Standardno (najkrupnije novčanice prvo)</option>
+                    <option value="small">Sitan novac prvo (najsitnije novčanice prvo)</option>
+                </select>
+            </div>
+
+            <button class="btn-main" style="width: 100%; margin-top: 10px;" onclick="calculatePayout()">
+                <span>Izračunaj koje novčanice uzeti</span>
+            </button>
+        </div>
+
+        <!-- REZULTAT ISPLATE -->
+        <div id="payout-result-area"></div>
     </div>
 </div>
 
-<button class="btn-reset" onclick="resetAll()">Resetuj sve</button>
-<p class="rate-note">Kurs: 1 EUR = 117 RSD &nbsp;|&nbsp; 1 KM = 58 RSD</p>
-
-
+<!-- HIDDEN CONTAINER FOR PRINT / PDF GENERATION -->
+<div id="pdf-print-area"></div>
 
 <script>
 var rsdNotes = [
@@ -358,23 +774,42 @@ var kmNotes = [
 ];
 
 var data = {};
+var lastPayoutResult = null;
 
 function fmt(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " "); }
 
+function switchTab(tabName) {
+    var tabs = document.querySelectorAll('.tab-btn');
+    var panels = document.querySelectorAll('.tab-panel');
+    
+    tabs.forEach(function(tb) { tb.classList.remove('active'); });
+    panels.forEach(function(pn) { pn.classList.remove('active'); });
+    
+    if (tabName === 'counter') {
+        tabs[0].classList.add('active');
+        document.getElementById('tab-counter').classList.add('active');
+    } else if (tabName === 'payout') {
+        tabs[1].classList.add('active');
+        document.getElementById('tab-payout').classList.add('active');
+    }
+}
+
 function buildCards(boxId, notes, prefix, cur, type) {
     var box = document.getElementById(boxId);
+    box.innerHTML = '';
     for (var i = 0; i < notes.length; i++) {
         var n = notes[i];
         var key = prefix + n.v;
         data[key] = 0;
+        
         var card = document.createElement('div');
         card.className = 'note-card';
         card.id = 'card-' + key;
         card.setAttribute('data-key', key);
         card.setAttribute('data-val', n.v);
         card.setAttribute('data-cur', cur);
-        card.setAttribute('data-lbl', n.lbl + ' ' + cur);
         card.setAttribute('data-type', type);
+        
         card.innerHTML =
             '<div class="note-face ' + n.css + '">' +
                 '<div class="nv">' + n.lbl + '</div>' +
@@ -385,9 +820,10 @@ function buildCards(boxId, notes, prefix, cur, type) {
                     '<div class="lbl">Iznos</div>' +
                     '<div class="val" id="sub-' + key + '">0 ' + cur + '</div>' +
                 '</div>' +
-                '<div class="note-qty">' +
-                    '<div class="lbl">Kom</div>' +
+                '<div class="note-controls">' +
+                    '<button class="btn-step" onclick="stepQty(\'' + key + '\', -1, event)">−</button>' +
                     '<input type="number" inputmode="numeric" pattern="[0-9]*" class="qty-input-inline" id="qty-' + key + '" placeholder="0" data-key="' + key + '" data-val="' + n.v + '" data-cur="' + cur + '">' +
+                    '<button class="btn-step" onclick="stepQty(\'' + key + '\', 1, event)">+</button>' +
                 '</div>' +
             '</div>';
             
@@ -395,18 +831,13 @@ function buildCards(boxId, notes, prefix, cur, type) {
         inp.addEventListener('input', function() {
             var raw = this.value;
             var qty = Math.max(0, parseInt(raw) || 0);
-            
             var localKey = this.getAttribute('data-key');
             var localVal = parseInt(this.getAttribute('data-val'));
             var localCur = this.getAttribute('data-cur');
             
             data[localKey] = qty;
-            
-            if (qty > 0) {
-                this.classList.add('has-value');
-            } else {
-                this.classList.remove('has-value');
-            }
+            if (qty > 0) this.classList.add('has-value');
+            else this.classList.remove('has-value');
 
             var sub = qty * localVal;
             document.getElementById('sub-' + localKey).textContent = fmt(sub) + ' ' + localCur;
@@ -414,7 +845,7 @@ function buildCards(boxId, notes, prefix, cur, type) {
         });
         
         card.addEventListener('click', function(e) {
-            if (e.target.tagName !== 'INPUT') {
+            if (e.target.tagName !== 'INPUT' && !e.target.classList.contains('btn-step')) {
                 this.querySelector('.qty-input-inline').focus();
             }
         });
@@ -423,39 +854,19 @@ function buildCards(boxId, notes, prefix, cur, type) {
     }
 }
 
+function stepQty(key, step, event) {
+    if (event) event.stopPropagation();
+    var inp = document.getElementById('qty-' + key);
+    if (!inp) return;
+    var current = Math.max(0, parseInt(inp.value) || 0);
+    var nextVal = Math.max(0, current + step);
+    inp.value = nextVal > 0 ? nextVal : '';
+    inp.dispatchEvent(new Event('input'));
+}
+
 buildCards('rsd-box', rsdNotes, 'rsd', 'RSD', 'rsd');
 buildCards('eur-box', eurNotes, 'eur', 'EUR', 'eur');
 buildCards('km-box',  kmNotes,  'km',  'KM',  'km');
-
-function copyGrandTotal() {
-    var text = document.getElementById('t-grand').textContent.replace(' RSD', '');
-    
-    if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(text);
-    } else {
-        var textArea = document.createElement("textarea");
-        textArea.value = text;
-        textArea.style.position = "fixed";
-        textArea.style.left = "-999999px";
-        textArea.style.top = "-999999px";
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        try { document.execCommand('copy'); } catch(err) {}
-        document.body.removeChild(textArea);
-    }
-    
-    var btn = document.getElementById('copy-btn');
-    var originalText = btn.textContent;
-    btn.textContent = 'Kopirano!';
-    btn.style.color = '#d4a017';
-    btn.style.borderColor = '#d4a017';
-    setTimeout(function() {
-        btn.textContent = originalText;
-        btn.style.color = '';
-        btn.style.borderColor = '';
-    }, 2000);
-}
 
 function calc() {
     var totalRSD = 0;
@@ -477,6 +888,10 @@ function calc() {
     var kmInRSD  = totalKM  * 58;
     var grand    = totalRSD + eurInRSD + kmInRSD;
 
+    document.getElementById('rsd-sec-total').textContent = fmt(totalRSD) + ' RSD';
+    document.getElementById('eur-sec-total').textContent = fmt(totalEUR) + ' EUR';
+    document.getElementById('km-sec-total').textContent  = fmt(totalKM)  + ' KM';
+
     document.getElementById('t-rsd').textContent     = fmt(totalRSD)  + ' RSD';
     document.getElementById('t-eur').textContent     = fmt(totalEUR)  + ' EUR';
     document.getElementById('t-eur-rsd').textContent = fmt(eurInRSD)  + ' RSD';
@@ -485,32 +900,433 @@ function calc() {
     document.getElementById('t-grand').textContent   = fmt(grand)     + ' RSD';
 }
 
-function resetAll() {
-    for (var k in data) { data[k] = 0; }
-
-    var allNotes = [
+function updateAllUIInputs() {
+    var allGroups = [
         {notes: rsdNotes, prefix: 'rsd', cur: 'RSD'},
         {notes: eurNotes, prefix: 'eur', cur: 'EUR'},
         {notes: kmNotes,  prefix: 'km',  cur: 'KM'}
     ];
 
-    allNotes.forEach(function(group) {
-        group.notes.forEach(function(n) {
-            var key = group.prefix + n.v;
+    allGroups.forEach(function(g) {
+        g.notes.forEach(function(n) {
+            var key = g.prefix + n.v;
+            var qty = data[key] || 0;
             var inp = document.getElementById('qty-' + key);
-            inp.value = '';
-            inp.classList.remove('has-value');
-            document.getElementById('sub-' + key).textContent = '0 ' + group.cur;
+            var subEl = document.getElementById('sub-' + key);
+            if (inp) {
+                inp.value = qty > 0 ? qty : '';
+                if (qty > 0) inp.classList.add('has-value');
+                else inp.classList.remove('has-value');
+            }
+            if (subEl) {
+                subEl.textContent = fmt(qty * n.v) + ' ' + g.cur;
+            }
         });
     });
-
-    document.getElementById('t-rsd').textContent     = '0 RSD';
-    document.getElementById('t-eur').textContent     = '0 EUR';
-    document.getElementById('t-eur-rsd').textContent = '0 RSD';
-    document.getElementById('t-km').textContent      = '0 KM';
-    document.getElementById('t-km-rsd').textContent  = '0 RSD';
-    document.getElementById('t-grand').textContent   = '0 RSD';
 }
+
+function copyGrandTotal() {
+    var text = document.getElementById('t-grand').textContent.replace(' RSD', '');
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text);
+    } else {
+        var textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try { document.execCommand('copy'); } catch(e){}
+        document.body.removeChild(textArea);
+    }
+    
+    var btn = document.getElementById('copy-btn');
+    var originalText = btn.textContent;
+    btn.textContent = 'Kopirano!';
+    btn.style.color = '#d4af37';
+    setTimeout(function() {
+        btn.textContent = originalText;
+        btn.style.color = '';
+    }, 1800);
+}
+
+function confirmResetAll() {
+    if (confirm('Da li ste sigurni da želite resetovati sve prebrojane novčanice na 0?')) {
+        for (var k in data) { data[k] = 0; }
+        updateAllUIInputs();
+        calc();
+        document.getElementById('payout-result-area').innerHTML = '';
+        lastPayoutResult = null;
+    }
+}
+
+/* FAST SMART PAYOUT ALGORITHM */
+function calculatePayout() {
+    var amountInput = document.getElementById('payout-amount');
+    var target = Math.max(0, parseInt(amountInput.value) || 0);
+    var cur = document.getElementById('payout-currency').value; // 'rsd', 'km', 'eur'
+    var strategy = document.getElementById('payout-strategy').value; // 'user', 'large', 'small'
+
+    if (target <= 0) {
+        alert('Molimo unesite validan iznos za isplatu (npr. 14000).');
+        return;
+    }
+
+    var notesList = [];
+    if (cur === 'rsd') notesList = rsdNotes;
+    else if (cur === 'eur') notesList = eurNotes;
+    else if (cur === 'km') notesList = kmNotes;
+
+    var priorityOrder = [];
+    if (strategy === 'user') {
+        var pref = [100, 200, 50, 500, 20, 10, 5, 2, 1, 1000, 2000, 5000];
+        priorityOrder = notesList.map(function(n){ return n.v; }).sort(function(a, b) {
+            var idxA = pref.indexOf(a);
+            var idxB = pref.indexOf(b);
+            if (idxA === -1) idxA = 999;
+            if (idxB === -1) idxB = 999;
+            return idxA - idxB;
+        });
+    } else if (strategy === 'large') {
+        priorityOrder = notesList.map(function(n){ return n.v; }).sort(function(a, b) { return b - a; });
+    } else if (strategy === 'small') {
+        priorityOrder = notesList.map(function(n){ return n.v; }).sort(function(a, b) { return a - b; });
+    }
+
+    var stockMap = {};
+    notesList.forEach(function(n) {
+        stockMap[n.v] = data[cur + n.v] || 0;
+    });
+
+    var res = fastSmartPayout(target, stockMap, priorityOrder, notesList, cur);
+
+    lastPayoutResult = {
+        target: target,
+        totalTaken: res.totalTaken,
+        remaining: Math.max(0, target - res.totalTaken),
+        cur: cur.toUpperCase(),
+        items: res.items
+    };
+
+    renderPayoutUI(lastPayoutResult);
+}
+
+function fastSmartPayout(target, stockMap, priorityOrder, notesList, cur) {
+    var counts = {};
+    var remaining = target;
+    
+    priorityOrder.forEach(function(v) {
+        counts[v] = 0;
+        var avail = stockMap[v] || 0;
+        if (avail > 0 && remaining >= v) {
+            var take = Math.min(avail, Math.floor(remaining / v));
+            counts[v] = take;
+            remaining -= take * v;
+        }
+    });
+
+    var currentSum = target - remaining;
+    if (currentSum === target) {
+        return buildResultObj(counts, notesList, cur, currentSum);
+    }
+
+    var unusedLargerNotes = [];
+    priorityOrder.forEach(function(v) {
+        var unusedQty = (stockMap[v] || 0) - (counts[v] || 0);
+        if (unusedQty > 0) {
+            for (var i = 0; i < unusedQty; i++) {
+                unusedLargerNotes.push(v);
+            }
+        }
+    });
+    unusedLargerNotes.sort(function(a, b){ return a - b; });
+
+    for (var k = 0; k < unusedLargerNotes.length; k++) {
+        var noteVal = unusedLargerNotes[k];
+        if (noteVal >= remaining) {
+            var overshoot = noteVal - remaining;
+            var testCounts = Object.assign({}, counts);
+            testCounts[noteVal] = (testCounts[noteVal] || 0) + 1;
+            
+            var reducedOvershoot = tryReduceOvershoot(testCounts, overshoot, priorityOrder);
+            if (reducedOvershoot === 0) {
+                return buildResultObj(testCounts, notesList, cur, target);
+            }
+        }
+    }
+
+    return buildResultObj(counts, notesList, cur, currentSum);
+}
+
+function tryReduceOvershoot(countsObj, overshoot, priorityOrder) {
+    var remOver = overshoot;
+    var availableInCounts = priorityOrder.filter(function(v) { return countsObj[v] > 0; }).sort(function(a,b){ return b - a; });
+    for (var i = 0; i < availableInCounts.length; i++) {
+        var v = availableInCounts[i];
+        if (v <= remOver && countsObj[v] > 0) {
+            var removeQty = Math.min(countsObj[v], Math.floor(remOver / v));
+            countsObj[v] -= removeQty;
+            remOver -= removeQty * v;
+        }
+    }
+    return remOver;
+}
+
+function buildResultObj(counts, notesList, cur, totalTaken) {
+    var items = [];
+    notesList.forEach(function(n) {
+        var cnt = counts[n.v] || 0;
+        if (cnt > 0) {
+            items.push({
+                value: n.v,
+                count: cnt,
+                subtotal: cnt * n.v,
+                lbl: n.lbl,
+                css: n.css,
+                key: cur + n.v
+            });
+        }
+    });
+    return {
+        totalTaken: totalTaken,
+        items: items
+    };
+}
+
+function renderPayoutUI(res) {
+    var container = document.getElementById('payout-result-area');
+    if (!res || res.items.length === 0) {
+        container.innerHTML =
+            '<div class="payout-result-card">' +
+                '<div style="text-align:center; color: #f87171; font-weight:700;">' +
+                    'Nema dostupnih novčanica u brojaču za isplatu iznosa od ' + fmt(res.target) + ' ' + res.cur + '.' +
+                '</div>' +
+            '</div>';
+        return;
+    }
+
+    var isExact = (res.remaining === 0);
+    var badgeHtml = isExact ?
+        '<span class="status-badge badge-success">✓ Tačan iznos 100% spakovan!</span>' :
+        '<span class="status-badge badge-warning">Nedostaje ' + fmt(res.remaining) + ' ' + res.cur + '</span>';
+
+    var itemsHtml = '';
+    for (var i = 0; i < res.items.length; i++) {
+        var item = res.items[i];
+        itemsHtml +=
+            '<div class="payout-item">' +
+                '<div class="payout-item-info">' +
+                    '<span class="payout-item-tag ' + item.css + '">' + item.lbl + ' ' + res.cur + '</span>' +
+                    '<span class="payout-item-qty">Uzmi: <strong>' + item.count + ' kom</strong></span>' +
+                '</div>' +
+                '<div class="payout-item-sub">' + fmt(item.subtotal) + ' ' + res.cur + '</div>' +
+            '</div>';
+    }
+
+    container.innerHTML =
+        '<div class="payout-result-card">' +
+            '<div class="payout-header">' +
+                '<div>' +
+                    '<div class="payout-title">Plan Isplate (' + fmt(res.totalTaken) + ' / ' + fmt(res.target) + ' ' + res.cur + ')</div>' +
+                '</div>' +
+                badgeHtml +
+            '</div>' +
+            itemsHtml +
+            '<div style="margin-top: 18px;" class="btn-group">' +
+                '<button class="btn-main" onclick="deductPayoutFromCounter()">' +
+                    '<span>Odbij izvučeno iz stanja</span>' +
+                '</button>' +
+                '<button class="btn-secondary" onclick="copyPayoutText()">' +
+                    '<span>Kopiraj tekst</span>' +
+                '</button>' +
+            '</div>' +
+            '<button class="btn-secondary" style="width: 100%; margin-top: 10px;" onclick="exportPDF(\'payout\')">' +
+                '<span>Sačuvaj PDF Nalog za isplatu</span>' +
+            '</button>' +
+        '</div>';
+}
+
+function deductPayoutFromCounter() {
+    if (!lastPayoutResult || !lastPayoutResult.items) return;
+    if (confirm('Da li želite da skinete ove novčanice iz prebrojanog stanja u brojaču?')) {
+        lastPayoutResult.items.forEach(function(item) {
+            data[item.key] = Math.max(0, (data[item.key] || 0) - item.count);
+        });
+        updateAllUIInputs();
+        calc();
+        alert('Novčanice su uspešno skinute iz trenutnog stanja!');
+        document.getElementById('payout-result-area').innerHTML = '';
+        lastPayoutResult = null;
+    }
+}
+
+function copyPayoutText() {
+    if (!lastPayoutResult) return;
+    var lines = ['--- NALOG ZA ISPLATU (' + lastPayoutResult.cur + ') ---'];
+    lastPayoutResult.items.forEach(function(item) {
+        lines.push('Uzmi novčanice od ' + item.lbl + ' ' + lastPayoutResult.cur + ': ' + item.count + ' kom (' + fmt(item.subtotal) + ' ' + lastPayoutResult.cur + ')');
+    });
+    lines.push('Ukupno pripremljeno: ' + fmt(lastPayoutResult.totalTaken) + ' ' + lastPayoutResult.cur);
+    if (lastPayoutResult.remaining > 0) {
+        lines.push('Nedostaje: ' + fmt(lastPayoutResult.remaining) + ' ' + lastPayoutResult.cur);
+    }
+    
+    var text = lines.join('\n');
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text);
+    } else {
+        var textArea = document.createElement("textarea");
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try { document.execCommand('copy'); } catch(e){}
+        document.body.removeChild(textArea);
+    }
+    alert('Uputstvo za isplatu je kopirano u clipboard!');
+}
+
+/* COMPACT PERFECT 1-PAGE PDF GENERATOR IN LUXURY GOLD STYLE */
+function exportPDF(type) {
+    var nowStr = new Date().toLocaleString('sr-RS');
+    var printArea = document.getElementById('pdf-print-area');
+    var htmlContent = '';
+
+    if (type === 'inventory') {
+        var totalRSD = 0;
+        var rsdRows = '';
+        rsdNotes.forEach(function(n) {
+            var qty = data['rsd' + n.v] || 0;
+            if (qty > 0) {
+                var sub = qty * n.v;
+                totalRSD += sub;
+                rsdRows += '<tr>' +
+                    '<td style="padding:4px 6px; border:1px solid #d4af37; font-weight:bold;">' + n.lbl + ' RSD</td>' +
+                    '<td style="padding:4px 6px; border:1px solid #d4af37; text-align:center;">' + qty + ' kom</td>' +
+                    '<td style="padding:4px 6px; border:1px solid #d4af37; text-align:right; font-weight:bold;">' + fmt(sub) + ' RSD</td>' +
+                '</tr>';
+            }
+        });
+        if (!rsdRows) rsdRows = '<tr><td colspan="3" style="padding:4px 6px; text-align:center; color:#857e70;">Nema unetih dinara</td></tr>';
+
+        var totalEUR = 0;
+        var eurRows = '';
+        eurNotes.forEach(function(n) {
+            var qty = data['eur' + n.v] || 0;
+            if (qty > 0) {
+                var sub = qty * n.v;
+                totalEUR += sub;
+                eurRows += '<tr>' +
+                    '<td style="padding:4px 6px; border:1px solid #d4af37; font-weight:bold;">' + n.lbl + ' EUR</td>' +
+                    '<td style="padding:4px 6px; border:1px solid #d4af37; text-align:center;">' + qty + ' kom</td>' +
+                    '<td style="padding:4px 6px; border:1px solid #d4af37; text-align:right; font-weight:bold;">' + fmt(sub) + ' EUR</td>' +
+                '</tr>';
+            }
+        });
+
+        var totalKM = 0;
+        var kmRows = '';
+        kmNotes.forEach(function(n) {
+            var qty = data['km' + n.v] || 0;
+            if (qty > 0) {
+                var sub = qty * n.v;
+                totalKM += sub;
+                kmRows += '<tr>' +
+                    '<td style="padding:4px 6px; border:1px solid #d4af37; font-weight:bold;">' + n.lbl + ' KM</td>' +
+                    '<td style="padding:4px 6px; border:1px solid #d4af37; text-align:center;">' + qty + ' kom</td>' +
+                    '<td style="padding:4px 6px; border:1px solid #d4af37; text-align:right; font-weight:bold;">' + fmt(sub) + ' KM</td>' +
+                '</tr>';
+            }
+        });
+
+        var eurInRSD = totalEUR * 117;
+        var kmInRSD = totalKM * 58;
+        var sveukupnoRSD = totalRSD + eurInRSD + kmInRSD;
+
+        htmlContent =
+            '<div style="font-family:\'Montserrat\', sans-serif; padding: 10px; color: #0a0a0d; background: #ffffff; max-width: 680px; margin: 0 auto; line-height: 1.3;">' +
+                '<div style="text-align: center; border-bottom: 2px solid #d4af37; padding-bottom: 6px; margin-bottom: 10px;">' +
+                    '<h1 style="font-family:\'Cormorant Garamond\', serif; font-size: 22px; font-weight: 700; color: #0a0a0d; margin-bottom: 2px; text-transform: uppercase; letter-spacing:1px;">IZVEŠTAJ O BROJANJU NOVCA</h1>' +
+                    '<p style="font-size: 11px; color: #666666;">Datum i vreme izveštaja: ' + nowStr + '</p>' +
+                '</div>' +
+
+                '<!-- TABELA DINARI -->' +
+                '<h3 style="font-family:\'Cormorant Garamond\', serif; font-size: 15px; color: #aa7c11; margin-bottom: 4px; text-transform:uppercase;">Dinari (RSD)</h3>' +
+                '<table style="width:100%; border-collapse:collapse; margin-bottom:10px; font-size:11px;">' +
+                    '<thead><tr style="background:#faf8f2; text-align:left;"><th style="padding:4px 6px; border:1px solid #d4af37;">Apoen (Naziv)</th><th style="padding:4px 6px; border:1px solid #d4af37; text-align:center;">Količina</th><th style="padding:4px 6px; border:1px solid #d4af37; text-align:right;">Ukupno (RSD)</th></tr></thead>' +
+                    '<tbody>' + rsdRows + '</tbody>' +
+                    '<tfoot><tr style="background:#f5e6ab; font-weight:bold;"><td colspan="2" style="padding:4px 6px; border:1px solid #d4af37;">UKUPNO DINARA:</td><td style="padding:4px 6px; border:1px solid #d4af37; text-align:right;">' + fmt(totalRSD) + ' RSD</td></tr></tfoot>' +
+                '</table>' +
+
+                (totalEUR > 0 ? (
+                '<!-- TABELA EURI -->' +
+                '<h3 style="font-family:\'Cormorant Garamond\', serif; font-size: 15px; color: #aa7c11; margin-bottom: 4px; text-transform:uppercase;">Euri (EUR)</h3>' +
+                '<table style="width:100%; border-collapse:collapse; margin-bottom:10px; font-size:11px;">' +
+                    '<thead><tr style="background:#faf8f2; text-align:left;"><th style="padding:4px 6px; border:1px solid #d4af37;">Apoen (Naziv)</th><th style="padding:4px 6px; border:1px solid #d4af37; text-align:center;">Količina</th><th style="padding:4px 6px; border:1px solid #d4af37; text-align:right;">Ukupno (EUR)</th></tr></thead>' +
+                    '<tbody>' + eurRows + '</tbody>' +
+                    '<tfoot><tr style="background:#f5e6ab; font-weight:bold;"><td colspan="2" style="padding:4px 6px; border:1px solid #d4af37;">UKUPNO EURA:</td><td style="padding:4px 6px; border:1px solid #d4af37; text-align:right;">' + fmt(totalEUR) + ' EUR</td></tr></tfoot>' +
+                '</table>'
+                ) : '') +
+
+                (totalKM > 0 ? (
+                '<!-- TABELA MARKE -->' +
+                '<h3 style="font-family:\'Cormorant Garamond\', serif; font-size: 15px; color: #aa7c11; margin-bottom: 4px; text-transform:uppercase;">Konvertibilne Marke (KM)</h3>' +
+                '<table style="width:100%; border-collapse:collapse; margin-bottom:10px; font-size:11px;">' +
+                    '<thead><tr style="background:#faf8f2; text-align:left;"><th style="padding:4px 6px; border:1px solid #d4af37;">Apoen (Naziv)</th><th style="padding:4px 6px; border:1px solid #d4af37; text-align:center;">Količina</th><th style="padding:4px 6px; border:1px solid #d4af37; text-align:right;">Ukupno (KM)</th></tr></thead>' +
+                    '<tbody>' + kmRows + '</tbody>' +
+                    '<tfoot><tr style="background:#f5e6ab; font-weight:bold;"><td colspan="2" style="padding:4px 6px; border:1px solid #d4af37;">UKUPNO MARAKA:</td><td style="padding:4px 6px; border:1px solid #d4af37; text-align:right;">' + fmt(totalKM) + ' KM</td></tr></tfoot>' +
+                '</table>'
+                ) : '') +
+
+                '<!-- ZBIRNI IZVEŠTAJ -->' +
+                '<div style="background:#121217; color:#ffffff; padding:12px 16px; border-radius:8px; font-size:12px; margin-top:10px; border:1px solid #d4af37;">' +
+                    '<h3 style="font-family:\'Cormorant Garamond\', serif; font-size:15px; margin-bottom:6px; border-bottom:1px solid #d4af37; padding-bottom:3px; color:#f5e6ab; text-transform:uppercase;">ZBIRNI IZVEŠTAJ SVIH VALUTA</h3>' +
+                    '<div style="display:flex; justify-content:space-between; margin-bottom:3px;"><span>Ukupno Dinara (RSD):</span><strong>' + fmt(totalRSD) + ' RSD</strong></div>' +
+                    '<div style="display:flex; justify-content:space-between; margin-bottom:3px;"><span>Ukupno Marke u dinare (×58):</span><strong>' + fmt(kmInRSD) + ' RSD</strong></div>' +
+                    '<div style="display:flex; justify-content:space-between; margin-bottom:3px;"><span>Ukupno Euri u dinare (×117):</span><strong>' + fmt(eurInRSD) + ' RSD</strong></div>' +
+                    '<hr style="margin:6px 0; border:none; border-top:1px solid #333;">' +
+                    '<div style="display:flex; justify-content:space-between; font-size:15px; font-weight:800; color:#f5e6ab; font-family:\'Cormorant Garamond\', serif;"><span>SVEUKUPNO U DINARIMA:</span><span>' + fmt(sveukupnoRSD) + ' RSD</span></div>' +
+                '</div>' +
+            '</div>';
+    } else if (type === 'payout') {
+        if (!lastPayoutResult) return;
+        var pRows = '';
+        lastPayoutResult.items.forEach(function(item) {
+            pRows += '<tr>' +
+                '<td style="padding:6px; border:1px solid #d4af37; font-weight:bold;">Novčanice od ' + item.lbl + ' ' + lastPayoutResult.cur + '</td>' +
+                '<td style="padding:6px; border:1px solid #d4af37; text-align:center; font-weight:bold;">' + item.count + ' kom</td>' +
+                '<td style="padding:6px; border:1px solid #d4af37; text-align:right; font-weight:bold;">' + fmt(item.subtotal) + ' ' + lastPayoutResult.cur + '</td>' +
+            '</tr>';
+        });
+
+        htmlContent =
+            '<div style="font-family:\'Montserrat\', sans-serif; padding: 10px; color: #0a0a0d; background: #ffffff; max-width: 680px; margin: 0 auto; line-height: 1.3;">' +
+                '<div style="text-align: center; border-bottom: 2px solid #d4af37; padding-bottom: 6px; margin-bottom: 12px;">' +
+                    '<h1 style="font-family:\'Cormorant Garamond\', serif; font-size: 20px; font-weight: 700; color: #0a0a0d; margin-bottom: 2px; text-transform:uppercase;">NALOG ZA ISPLATU NOVCA</h1>' +
+                    '<p style="font-size: 11px; color: #666666;">Datum i vreme: ' + nowStr + '</p>' +
+                '</div>' +
+
+                '<table style="width:100%; border-collapse:collapse; margin-bottom:12px; font-size:11px;">' +
+                    '<thead><tr style="background:#faf8f2; text-align:left;"><th style="padding:6px; border:1px solid #d4af37;">Apoen (Naziv)</th><th style="padding:6px; border:1px solid #d4af37; text-align:center;">Uzeti komada</th><th style="padding:6px; border:1px solid #d4af37; text-align:right;">Ukupan iznos</th></tr></thead>' +
+                    '<tbody>' + pRows + '</tbody>' +
+                '</table>' +
+
+                '<div style="background:#121217; color:#ffffff; padding:10px 14px; border-radius:8px; font-size:12px; border:1px solid #d4af37;">' +
+                    '<div style="display:flex; justify-content:space-between; margin-bottom:3px;"><span>Traženi iznos:</span><strong>' + fmt(lastPayoutResult.target) + ' ' + lastPayoutResult.cur + '</strong></div>' +
+                    '<div style="display:flex; justify-content:space-between; margin-bottom:3px;"><span>Pripremljeni iznos:</span><strong>' + fmt(lastPayoutResult.totalTaken) + ' ' + lastPayoutResult.cur + '</strong></div>' +
+                    (lastPayoutResult.remaining > 0 ? '<div style="display:flex; justify-content:space-between; color: #f87171;"><span>Nedostaje:</span><strong>' + fmt(lastPayoutResult.remaining) + ' ' + lastPayoutResult.cur + '</strong></div>' : '') +
+                '</div>' +
+            '</div>';
+    }
+
+    printArea.innerHTML = htmlContent;
+    window.print();
+}
+
+window.onafterprint = function() {
+    document.getElementById('pdf-print-area').innerHTML = '';
+};
 </script>
 </body>
 </html>
